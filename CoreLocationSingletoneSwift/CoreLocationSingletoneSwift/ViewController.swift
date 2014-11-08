@@ -10,8 +10,6 @@ import UIKit
 
 class ViewController: UIViewController {
     
-    let locationManager = LocationManager.shared
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -27,7 +25,12 @@ class ViewController: UIViewController {
         view.addSubview(buttonGetLocation)
         
         buttonGetLocation.frame = CGRectMake(30,100,150,20)
+    }
+    
+    override func viewDidAppear(animated: Bool) {
+        super.viewDidAppear(animated)
         
+        let locationManager = LocationManager.shared
         locationManager.startUpdatingLocation()
     }
 
@@ -37,6 +40,7 @@ class ViewController: UIViewController {
     }
 
     func getCurrentLocation(sender: UIButton) {
+        let locationManager = LocationManager.shared
         println(locationManager.currentLocationText)
     }
     

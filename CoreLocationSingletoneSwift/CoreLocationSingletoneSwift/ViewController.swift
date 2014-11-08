@@ -9,16 +9,26 @@
 import UIKit
 
 class ViewController: UIViewController {
-
+    
+    let locationManager = LocationManager.shared
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         view.backgroundColor = UIColor.whiteColor()
         
-        let locationManager = LocationManager.shared
+        let buttonGetLocation = UIButton.buttonWithType(.System) as UIButton
+        
+        buttonGetLocation.titleLabel?.font = UIFont.systemFontOfSize(17)
+        buttonGetLocation.setTitle("Current Location", forState: .Normal)
+        buttonGetLocation.addTarget(self, action: "getCurrentLocation:", forControlEvents: .TouchUpInside)
+        buttonGetLocation.setTitleColor(UIColor.blueColor(), forState: .Normal)
+        
+        view.addSubview(buttonGetLocation)
+        
+        buttonGetLocation.frame = CGRectMake(30,100,150,20)
         
         locationManager.startUpdatingLocation()
-        println(locationManager.currentLocation)
     }
 
     override func didReceiveMemoryWarning() {
@@ -26,5 +36,8 @@ class ViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
 
-
+    func getCurrentLocation(sender: UIButton) {
+        println(locationManager.currentLocationText)
+    }
+    
 }

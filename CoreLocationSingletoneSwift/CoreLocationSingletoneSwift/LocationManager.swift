@@ -20,29 +20,46 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
     }
     
     let locationManager = CLLocationManager()
+    let geocoder = CLGeocoder()
     var currentLocation = CLLocation()
-    
-//    class var shared : LocationManager {
-//        struct Static {
-//            static var onceToken : dispatch_once_t = 0
-//            static var instance : LocationManager? = nil
-//        }
-//        dispatch_once(&Static.onceToken) {
-//            Static.instance = LocationManager()
-//        }
-//        return Static.instance!
-//    }
+    var currentLocationText: String?
     
     override init() {
         super.init()
         
         if CLLocationManager.locationServicesEnabled() {
-            locationManager.delegate = self
-            locationManager.desiredAccuracy = kCLLocationAccuracyBest
-            locationManager.requestWhenInUseAuthorization()
+            switch CLLocationManager.authorizationStatus() {
+                case .Authorized:
+                    // Yes, always
+                    createLocationManager()
+                case .AuthorizedWhenInUse:
+                    // Yes, only when our app is in use
+                    createLocationManager()
+                case .Denied:
+                    // NO
+                    displayAlertWithTitle("Not Determined", message: "Location services are not allowed for this app")
+                case .NotDetermined:
+                    // Ask for access
+                    createLocationManager()
+                    locationManager.requestWhenInUseAuthorization()
+                case .Restricted:
+                    // Have no access to location services
+                    displayAlertWithTitle("Restricted", message: "Location services are not allowed for this app")
+            }
         } else {
-            println("Location services are not enabled!")
+            displayAlertWithTitle("Not Enabled", message: "Location services are not enabled on this device")
         }
+    }
+    
+    func displayAlertWithTitle(title: String, message: String) {
+        var alert = UIAlertView(title: title, message: message, delegate: nil, cancelButtonTitle: "OK")
+        
+        alert.show()
+    }
+    
+    func createLocationManager() {
+        locationManager.delegate = self
+        locationManager.desiredAccuracy = kCLLocationAccuracyBest
     }
     
     func startUpdatingLocation() {
@@ -59,16 +76,20 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
     
     func locationManager(manager: CLLocationManager!, didUpdateLocations locations: [AnyObject]!) {
         var locationArray = locations as NSArray
-        var locationObj = locationArray.lastObject as CLLocation
-        var coord = locationObj.coordinate
         
-        println(coord.latitude)
-        println(coord.longitude)
-    }
-    
-    func locationManager(manager: CLLocationManager!, didUpdateToLocation newLocation: CLLocation!, fromLocation oldLocation: CLLocation!) {
-//        println(newLocation)
-        currentLocation = newLocation
+        currentLocation = locationArray.lastObject as CLLocation
+        
+        geocoder.reverseGeocodeLocation(currentLocation, completionHandler: {(placemarks, error) -> Void in
+            if error != nil {
+                println("Error: \(error)")
+            } else {
+                var placemarksArray = placemarks as NSArray
+                var placemark = placemarksArray.lastObject as CLPlacemark
+                
+                self.currentLocationText = placemark.thoroughfare
+//                println(self.currentLocationText)
+            }
+        })
     }
     
 }

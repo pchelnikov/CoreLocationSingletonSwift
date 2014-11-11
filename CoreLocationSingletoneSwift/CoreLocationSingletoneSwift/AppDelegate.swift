@@ -22,6 +22,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         self.window!.rootViewController = rootController
         self.window!.makeKeyAndVisible()
         
+        LocationManager.shared.authorize()
+        
         return true
     }
 

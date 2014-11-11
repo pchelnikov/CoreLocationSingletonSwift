@@ -30,8 +30,7 @@ class ViewController: UIViewController {
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
         
-        let locationManager = LocationManager.shared
-        locationManager.startUpdatingLocation()
+        LocationManager.shared.startUpdatingLocation()
     }
 
     override func didReceiveMemoryWarning() {
@@ -40,8 +39,7 @@ class ViewController: UIViewController {
     }
 
     func getCurrentLocation(sender: UIButton) {
-        let locationManager = LocationManager.shared
-        println(locationManager.currentLocationText)
+        println(LocationManager.shared.currentLocationText)
     }
     
 }
